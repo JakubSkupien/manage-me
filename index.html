@@ -6,217 +6,315 @@
     <title>ManageMe</title>
   </head>
   <body>
-    <div class="container">
 
-      <!-- ─── HEADER ──────────────────────────────────────────────────────── -->
-      <header class="app-header">
-        <div class="app-header__title">
-          <h1>ManageMe</h1>
-          <p>Prosta aplikacja do zarządzania projektami</p>
+    <!-- ─── NAVBAR ──────────────────────────────────────────────────────────── -->
+    <nav class="navbar navbar-expand-lg shadow-sm mb-4">
+      <div class="container" style="max-width: 900px">
+        <span class="navbar-brand fw-bold fs-4">
+          <i class="bi bi-kanban-fill text-primary me-2"></i>ManageMe
+        </span>
+        <div class="d-flex align-items-center gap-2 ms-auto flex-wrap">
+          <!-- Logged user -->
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-person-circle text-secondary fs-5"></i>
+            <span id="user-name" class="fw-semibold small"></span>
+            <span id="user-role" class="badge"></span>
+          </div>
+          <!-- Theme toggle -->
+          <button id="theme-toggle" class="btn btn-outline-secondary btn-sm" title="Przełącz motyw">
+            <i id="theme-icon" class="bi bi-sun-fill"></i>
+            <span id="theme-label" class="ms-1 d-none d-sm-inline">Jasny</span>
+          </button>
         </div>
-        <div class="user-info">
-          <span class="user-info__label">Zalogowany:</span>
-          <span id="user-name" class="user-info__name"></span>
-          <span id="user-role" class="badge badge--role"></span>
+      </div>
+    </nav>
+
+    <!-- ─── MAIN CONTENT ─────────────────────────────────────────────────────── -->
+    <div class="container mb-5" style="max-width: 900px">
+
+      <!-- Project form -->
+      <div class="card shadow-sm mb-3">
+        <div class="card-body">
+          <h5 class="card-title mb-3" id="project-form-title">Dodaj projekt</h5>
+          <form id="project-form" novalidate>
+            <div class="mb-3">
+              <label for="project-name" class="form-label">Nazwa projektu</label>
+              <input type="text" class="form-control" id="project-name"
+                placeholder="Wpisz nazwę projektu" autocomplete="off" />
+            </div>
+            <div class="mb-3">
+              <label for="project-desc" class="form-label">Opis projektu</label>
+              <textarea class="form-control" id="project-desc"
+                placeholder="Wpisz opis projektu" rows="2"></textarea>
+            </div>
+            <div class="d-flex gap-2">
+              <button type="submit" id="project-submit-btn" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i>Dodaj
+              </button>
+              <button type="button" id="project-cancel-btn" class="btn btn-secondary" style="display: none">
+                Anuluj
+              </button>
+            </div>
+          </form>
         </div>
-      </header>
+      </div>
 
-      <!-- ─── PROJECT MANAGEMENT ──────────────────────────────────────────── -->
+      <!-- Project list -->
+      <div class="card shadow-sm mb-3">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Lista projektów</h5>
+          <p id="project-empty-message" class="text-muted text-center py-2 mb-0">
+            Brak projektów. Dodaj pierwszy projekt powyżej.
+          </p>
+          <ul id="project-list" class="list-group list-group-flush"></ul>
+        </div>
+      </div>
 
-      <section class="card">
-        <h2 id="project-form-title">Dodaj projekt</h2>
-        <form id="project-form" novalidate>
-          <div class="form-group">
-            <label for="project-name">Nazwa projektu</label>
-            <input type="text" id="project-name" placeholder="Wpisz nazwę projektu" autocomplete="off" />
-          </div>
-          <div class="form-group">
-            <label for="project-desc">Opis projektu</label>
-            <textarea id="project-desc" placeholder="Wpisz opis projektu"></textarea>
-          </div>
-          <div class="form-actions">
-            <button type="submit" id="project-submit-btn" class="btn btn-primary">Dodaj</button>
-            <button type="button" id="project-cancel-btn" class="btn btn-secondary" style="display: none">Anuluj</button>
-          </div>
-        </form>
-      </section>
-
-      <section class="card">
-        <h2>Lista projektów</h2>
-        <p id="project-empty-message">Brak projektów. Dodaj pierwszy projekt powyżej.</p>
-        <ul id="project-list"></ul>
-      </section>
-
-      <!-- ─── ACTIVE PROJECT + STORIES + KANBAN ───────────────────────────── -->
-
+      <!-- ─── ACTIVE PROJECT ───────────────────────────────────────────────── -->
       <section id="active-project-section" style="display: none">
 
         <!-- Active project info -->
-        <div class="card active-project-card">
-          <div class="active-project-card__header">
-            <span class="badge badge--active">Aktywny projekt</span>
+        <div class="card shadow-sm mb-3 border-primary border-start border-4">
+          <div class="card-body">
+            <span class="badge text-bg-primary mb-2">
+              <i class="bi bi-star-fill me-1"></i>Aktywny projekt
+            </span>
+            <h5 class="card-title mb-1" id="active-project-name"></h5>
+            <p class="card-text text-muted mb-0 small" id="active-project-desc"></p>
           </div>
-          <h2 id="active-project-name"></h2>
-          <p id="active-project-desc"></p>
         </div>
 
-        <!-- Tab navigation -->
-        <div class="tabs">
-          <button class="tab-btn tab-btn--active" data-tab="stories">Historyjki</button>
-          <button class="tab-btn" data-tab="kanban">Kanban</button>
-        </div>
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-3" id="projectTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="stories-tab"
+              data-bs-toggle="tab" data-bs-target="#tab-stories"
+              type="button" role="tab">
+              <i class="bi bi-card-list me-1"></i>Historyjki
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="kanban-tab"
+              data-bs-toggle="tab" data-bs-target="#tab-kanban"
+              type="button" role="tab">
+              <i class="bi bi-kanban me-1"></i>Kanban
+            </button>
+          </li>
+        </ul>
 
-        <!-- ── Tab: Stories ─────────────────────────────────────────────── -->
-        <div id="tab-stories">
+        <div class="tab-content">
 
-          <!-- Story form -->
-          <div class="card">
-            <h2 id="story-form-title">Dodaj historyjkę</h2>
-            <form id="story-form" novalidate>
-              <div class="form-group">
-                <label for="story-name">Nazwa historyjki</label>
-                <input type="text" id="story-name" placeholder="Wpisz nazwę historyjki" autocomplete="off" />
-              </div>
-              <div class="form-group">
-                <label for="story-desc">Opis</label>
-                <textarea id="story-desc" placeholder="Wpisz opis historyjki"></textarea>
-              </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="story-priority">Priorytet</label>
-                  <select id="story-priority">
-                    <option value="low">Niski</option>
-                    <option value="medium" selected>Średni</option>
-                    <option value="high">Wysoki</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="story-status">Stan</label>
-                  <select id="story-status">
-                    <option value="todo" selected>Do zrobienia</option>
-                    <option value="doing">W trakcie</option>
-                    <option value="done">Gotowe</option>
-                  </select>
-                </div>
-              </div>
-              <div class="form-actions">
-                <button type="submit" id="story-submit-btn" class="btn btn-primary">Dodaj</button>
-                <button type="button" id="story-cancel-btn" class="btn btn-secondary" style="display: none">Anuluj</button>
-              </div>
-            </form>
-          </div>
+          <!-- ── Tab: Stories ────────────────────────────────────────────── -->
+          <div class="tab-pane fade show active" id="tab-stories" role="tabpanel">
 
-          <!-- Story list with filters -->
-          <div class="card">
-            <h2>Historyjki projektu</h2>
-            <div class="filter-bar">
-              <button class="btn filter-btn" data-filter="all">Wszystkie</button>
-              <button class="btn filter-btn" data-filter="todo">Do zrobienia</button>
-              <button class="btn filter-btn" data-filter="doing">W trakcie</button>
-              <button class="btn filter-btn" data-filter="done">Gotowe</button>
-            </div>
-            <p id="story-empty-message">Brak historyjek. Dodaj pierwszą historyjkę powyżej.</p>
-            <ul id="story-list"></ul>
-          </div>
-
-        </div><!-- /#tab-stories -->
-
-        <!-- ── Tab: Kanban ──────────────────────────────────────────────── -->
-        <div id="tab-kanban" style="display: none">
-          <div class="card">
-            <h2>Tablica Kanban</h2>
-            <p class="kanban-hint">Kliknij „Szczegóły" przy zadaniu, aby je edytować lub zmienić status.</p>
-            <div class="kanban-board">
-              <div class="kanban-column">
-                <h3 class="kanban-column__title kanban-column__title--todo">Do zrobienia</h3>
-                <ul id="kanban-todo" class="kanban-list"></ul>
-              </div>
-              <div class="kanban-column">
-                <h3 class="kanban-column__title kanban-column__title--doing">W trakcie</h3>
-                <ul id="kanban-doing" class="kanban-list"></ul>
-              </div>
-              <div class="kanban-column">
-                <h3 class="kanban-column__title kanban-column__title--done">Gotowe</h3>
-                <ul id="kanban-done" class="kanban-list"></ul>
+            <!-- Story form -->
+            <div class="card shadow-sm mb-3">
+              <div class="card-body">
+                <h5 class="card-title mb-3" id="story-form-title">Dodaj historyjkę</h5>
+                <form id="story-form" novalidate>
+                  <div class="mb-3">
+                    <label for="story-name" class="form-label">Nazwa historyjki</label>
+                    <input type="text" class="form-control" id="story-name"
+                      placeholder="Wpisz nazwę historyjki" autocomplete="off" />
+                  </div>
+                  <div class="mb-3">
+                    <label for="story-desc" class="form-label">Opis</label>
+                    <textarea class="form-control" id="story-desc"
+                      placeholder="Wpisz opis historyjki" rows="2"></textarea>
+                  </div>
+                  <div class="row g-3 mb-3">
+                    <div class="col-sm-6">
+                      <label for="story-priority" class="form-label">Priorytet</label>
+                      <select class="form-select" id="story-priority">
+                        <option value="low">Niski</option>
+                        <option value="medium" selected>Średni</option>
+                        <option value="high">Wysoki</option>
+                      </select>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="story-status" class="form-label">Stan</label>
+                      <select class="form-select" id="story-status">
+                        <option value="todo" selected>Do zrobienia</option>
+                        <option value="doing">W trakcie</option>
+                        <option value="done">Gotowe</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="d-flex gap-2">
+                    <button type="submit" id="story-submit-btn" class="btn btn-primary">
+                      <i class="bi bi-plus-lg me-1"></i>Dodaj
+                    </button>
+                    <button type="button" id="story-cancel-btn" class="btn btn-secondary" style="display: none">
+                      Anuluj
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
-          </div>
-        </div><!-- /#tab-kanban -->
 
+            <!-- Story list -->
+            <div class="card shadow-sm mb-3">
+              <div class="card-body">
+                <h5 class="card-title mb-3">Historyjki projektu</h5>
+                <!-- Filter -->
+                <div class="btn-group mb-3 w-100 flex-wrap" role="group" aria-label="Filtr historyjek">
+                  <button class="btn btn-outline-secondary btn-sm filter-btn active" data-filter="all">Wszystkie</button>
+                  <button class="btn btn-outline-secondary btn-sm filter-btn" data-filter="todo">Do zrobienia</button>
+                  <button class="btn btn-outline-secondary btn-sm filter-btn" data-filter="doing">W trakcie</button>
+                  <button class="btn btn-outline-secondary btn-sm filter-btn" data-filter="done">Gotowe</button>
+                </div>
+                <p id="story-empty-message" class="text-muted text-center py-2 mb-0">
+                  Brak historyjek. Dodaj pierwszą historyjkę powyżej.
+                </p>
+                <ul id="story-list" class="list-group list-group-flush"></ul>
+              </div>
+            </div>
+
+          </div><!-- /#tab-stories -->
+
+          <!-- ── Tab: Kanban ──────────────────────────────────────────────── -->
+          <div class="tab-pane fade" id="tab-kanban" role="tabpanel">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title mb-1">Tablica Kanban</h5>
+                <p class="text-muted small mb-3">
+                  Zadania z aktywnego projektu. Kliknij „Szczegóły", aby edytować lub zmienić status.
+                </p>
+                <div class="row g-3">
+                  <div class="col-md-4">
+                    <div class="kanban-column p-3 rounded h-100">
+                      <h6 class="kanban-column__title fw-bold text-center mb-3 kanban-todo-title">
+                        <i class="bi bi-circle me-1"></i>Do zrobienia
+                      </h6>
+                      <ul id="kanban-todo" class="list-unstyled mb-0"></ul>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="kanban-column p-3 rounded h-100">
+                      <h6 class="kanban-column__title fw-bold text-center mb-3 kanban-doing-title">
+                        <i class="bi bi-arrow-repeat me-1"></i>W trakcie
+                      </h6>
+                      <ul id="kanban-doing" class="list-unstyled mb-0"></ul>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="kanban-column p-3 rounded h-100">
+                      <h6 class="kanban-column__title fw-bold text-center mb-3 kanban-done-title">
+                        <i class="bi bi-check-circle me-1"></i>Gotowe
+                      </h6>
+                      <ul id="kanban-done" class="list-unstyled mb-0"></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div><!-- /#tab-kanban -->
+
+        </div><!-- /.tab-content -->
       </section><!-- /#active-project-section -->
-
     </div><!-- /.container -->
 
-    <!-- ─── TASK DETAIL MODAL ────────────────────────────────────────────── -->
-    <div id="task-modal-overlay" class="modal-overlay" style="display: none" role="dialog" aria-modal="true">
-      <div class="modal">
+    <!-- ─── TASK DETAIL MODAL (Bootstrap) ──────────────────────────────────── -->
+    <div class="modal fade" id="taskModal" tabindex="-1"
+      aria-labelledby="modal-task-name" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
 
-        <div class="modal__header">
-          <h2 id="modal-task-name">Szczegóły zadania</h2>
-          <button id="modal-close-btn" class="modal__close" type="button" aria-label="Zamknij">×</button>
-        </div>
+          <div class="modal-header">
+            <h5 class="modal-title" id="modal-task-name">Szczegóły zadania</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zamknij"></button>
+          </div>
 
-        <div class="modal__body">
+          <div class="modal-body">
 
-          <!-- Edit fields -->
-          <div class="modal-section">
-            <h3 class="modal-section__title">Edytuj zadanie</h3>
-            <div class="form-group">
-              <label for="modal-edit-name">Nazwa</label>
-              <input type="text" id="modal-edit-name" />
-            </div>
-            <div class="form-group">
-              <label for="modal-edit-desc">Opis</label>
-              <textarea id="modal-edit-desc"></textarea>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="modal-edit-priority">Priorytet</label>
-                <select id="modal-edit-priority">
-                  <option value="low">Niski</option>
-                  <option value="medium">Średni</option>
-                  <option value="high">Wysoki</option>
-                </select>
+            <!-- Edit section -->
+            <div class="card mb-3 border-0 bg-body-secondary">
+              <div class="card-body">
+                <p class="text-uppercase fw-bold small text-muted mb-3" style="letter-spacing:.05em">
+                  Edytuj zadanie
+                </p>
+                <div class="mb-2">
+                  <label for="modal-edit-name" class="form-label form-label-sm">Nazwa</label>
+                  <input type="text" class="form-control form-control-sm" id="modal-edit-name" />
+                </div>
+                <div class="mb-2">
+                  <label for="modal-edit-desc" class="form-label form-label-sm">Opis</label>
+                  <textarea class="form-control form-control-sm" id="modal-edit-desc" rows="3"></textarea>
+                </div>
+                <div class="row g-2 mb-3">
+                  <div class="col-6">
+                    <label for="modal-edit-priority" class="form-label form-label-sm">Priorytet</label>
+                    <select class="form-select form-select-sm" id="modal-edit-priority">
+                      <option value="low">Niski</option>
+                      <option value="medium">Średni</option>
+                      <option value="high">Wysoki</option>
+                    </select>
+                  </div>
+                  <div class="col-6">
+                    <label for="modal-edit-estimated" class="form-label form-label-sm">Szacowane godziny</label>
+                    <input type="number" class="form-control form-control-sm"
+                      id="modal-edit-estimated" min="0" step="0.5" />
+                  </div>
+                </div>
+                <button id="modal-save-btn" type="button" class="btn btn-primary btn-sm">
+                  <i class="bi bi-floppy me-1"></i>Zapisz zmiany
+                </button>
               </div>
-              <div class="form-group">
-                <label for="modal-edit-estimated">Szacowane godziny</label>
-                <input type="number" id="modal-edit-estimated" min="0" step="0.5" />
+            </div>
+
+            <!-- Info section -->
+            <div class="card mb-3 border-0 bg-body-secondary">
+              <div class="card-body">
+                <p class="text-uppercase fw-bold small text-muted mb-3" style="letter-spacing:.05em">
+                  Informacje
+                </p>
+                <div id="modal-task-details"></div>
               </div>
             </div>
-            <button id="modal-save-btn" type="button" class="btn btn-primary">Zapisz zmiany</button>
-          </div>
 
-          <!-- Read-only details -->
-          <div class="modal-section">
-            <h3 class="modal-section__title">Informacje</h3>
-            <dl id="modal-task-details" class="task-details"></dl>
-          </div>
-
-          <!-- Assign user section (visible if status ≠ done) -->
-          <div id="modal-assign-section" class="modal-section" style="display: none">
-            <h3 class="modal-section__title">Przypisz osobę</h3>
-            <div class="form-group">
-              <label for="modal-user-select">Użytkownik (developer / devops)</label>
-              <select id="modal-user-select">
-                <option value="">-- Wybierz osobę --</option>
-              </select>
+            <!-- Assign user section -->
+            <div id="modal-assign-section" class="card mb-3 border-0 bg-body-secondary" style="display: none">
+              <div class="card-body">
+                <p class="text-uppercase fw-bold small text-muted mb-3" style="letter-spacing:.05em">
+                  Przypisz osobę
+                </p>
+                <div class="mb-3">
+                  <label for="modal-user-select" class="form-label form-label-sm">
+                    Użytkownik (developer / devops)
+                  </label>
+                  <select class="form-select form-select-sm" id="modal-user-select">
+                    <option value="">-- Wybierz osobę --</option>
+                  </select>
+                </div>
+                <button id="modal-assign-btn" type="button" class="btn btn-primary btn-sm">
+                  <i class="bi bi-person-check me-1"></i>Przypisz i rozpocznij
+                </button>
+              </div>
             </div>
-            <button id="modal-assign-btn" type="button" class="btn btn-primary">Przypisz i rozpocznij</button>
-          </div>
 
-          <!-- Mark as done section (visible if status = doing) -->
-          <div id="modal-done-section" class="modal-section" style="display: none">
-            <h3 class="modal-section__title">Zakończ zadanie</h3>
-            <div class="form-group">
-              <label for="modal-realized-hours">Zrealizowane godziny</label>
-              <input type="number" id="modal-realized-hours" min="0" step="0.5" value="0" />
+            <!-- Mark as done section -->
+            <div id="modal-done-section" class="card mb-3 border-0 bg-body-secondary" style="display: none">
+              <div class="card-body">
+                <p class="text-uppercase fw-bold small text-muted mb-3" style="letter-spacing:.05em">
+                  Zakończ zadanie
+                </p>
+                <div class="mb-3">
+                  <label for="modal-realized-hours" class="form-label form-label-sm">
+                    Zrealizowane godziny
+                  </label>
+                  <input type="number" class="form-control form-control-sm"
+                    id="modal-realized-hours" min="0" step="0.5" value="0" />
+                </div>
+                <button id="modal-done-btn" type="button" class="btn btn-success btn-sm">
+                  <i class="bi bi-check-lg me-1"></i>Oznacz jako gotowe
+                </button>
+              </div>
             </div>
-            <button id="modal-done-btn" type="button" class="btn btn-success">Oznacz jako gotowe</button>
-          </div>
 
-        </div><!-- /.modal__body -->
-      </div><!-- /.modal -->
-    </div><!-- /#task-modal-overlay -->
+          </div><!-- /.modal-body -->
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /#taskModal -->
 
     <script type="module" src="/src/main.ts"></script>
   </body>
