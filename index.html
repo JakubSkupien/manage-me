@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ManageMe</title>
+  </head>
+  <body>
+    <div class="container">
+
+      <!-- ─── HEADER ──────────────────────────────────────────────────────── -->
+      <header class="app-header">
+        <div class="app-header__title">
+          <h1>ManageMe</h1>
+          <p>Prosta aplikacja do zarządzania projektami</p>
+        </div>
+        <div class="user-info">
+          <span class="user-info__label">Zalogowany:</span>
+          <span id="user-name" class="user-info__name"></span>
+          <span id="user-role" class="badge badge--role"></span>
+        </div>
+      </header>
+
+      <!-- ─── PROJECT MANAGEMENT ──────────────────────────────────────────── -->
+
+      <section class="card">
+        <h2 id="project-form-title">Dodaj projekt</h2>
+        <form id="project-form" novalidate>
+          <div class="form-group">
+            <label for="project-name">Nazwa projektu</label>
+            <input type="text" id="project-name" placeholder="Wpisz nazwę projektu" autocomplete="off" />
+          </div>
+          <div class="form-group">
+            <label for="project-desc">Opis projektu</label>
+            <textarea id="project-desc" placeholder="Wpisz opis projektu"></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit" id="project-submit-btn" class="btn btn-primary">Dodaj</button>
+            <button type="button" id="project-cancel-btn" class="btn btn-secondary" style="display: none">Anuluj</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Lista projektów</h2>
+        <p id="project-empty-message">Brak projektów. Dodaj pierwszy projekt powyżej.</p>
+        <ul id="project-list"></ul>
+      </section>
+
+      <!-- ─── ACTIVE PROJECT + STORIES + KANBAN ───────────────────────────── -->
+
+      <section id="active-project-section" style="display: none">
+
+        <!-- Active project info -->
+        <div class="card active-project-card">
+          <div class="active-project-card__header">
+            <span class="badge badge--active">Aktywny projekt</span>
+          </div>
+          <h2 id="active-project-name"></h2>
+          <p id="active-project-desc"></p>
+        </div>
+
+        <!-- Tab navigation -->
+        <div class="tabs">
+          <button class="tab-btn tab-btn--active" data-tab="stories">Historyjki</button>
+          <button class="tab-btn" data-tab="kanban">Kanban</button>
+        </div>
+
+        <!-- ── Tab: Stories ─────────────────────────────────────────────── -->
+        <div id="tab-stories">
+
+          <!-- Story form -->
+          <div class="card">
+            <h2 id="story-form-title">Dodaj historyjkę</h2>
+            <form id="story-form" novalidate>
+              <div class="form-group">
+                <label for="story-name">Nazwa historyjki</label>
+                <input type="text" id="story-name" placeholder="Wpisz nazwę historyjki" autocomplete="off" />
+              </div>
+              <div class="form-group">
+                <label for="story-desc">Opis</label>
+                <textarea id="story-desc" placeholder="Wpisz opis historyjki"></textarea>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="story-priority">Priorytet</label>
+                  <select id="story-priority">
+                    <option value="low">Niski</option>
+                    <option value="medium" selected>Średni</option>
+                    <option value="high">Wysoki</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="story-status">Stan</label>
+                  <select id="story-status">
+                    <option value="todo" selected>Do zrobienia</option>
+                    <option value="doing">W trakcie</option>
+                    <option value="done">Gotowe</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="submit" id="story-submit-btn" class="btn btn-primary">Dodaj</button>
+                <button type="button" id="story-cancel-btn" class="btn btn-secondary" style="display: none">Anuluj</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Story list with filters -->
+          <div class="card">
+            <h2>Historyjki projektu</h2>
+            <div class="filter-bar">
+              <button class="btn filter-btn" data-filter="all">Wszystkie</button>
+              <button class="btn filter-btn" data-filter="todo">Do zrobienia</button>
+              <button class="btn filter-btn" data-filter="doing">W trakcie</button>
+              <button class="btn filter-btn" data-filter="done">Gotowe</button>
+            </div>
+            <p id="story-empty-message">Brak historyjek. Dodaj pierwszą historyjkę powyżej.</p>
+            <ul id="story-list"></ul>
+          </div>
+
+        </div><!-- /#tab-stories -->
+
+        <!-- ── Tab: Kanban ──────────────────────────────────────────────── -->
+        <div id="tab-kanban" style="display: none">
+          <div class="card">
+            <h2>Tablica Kanban</h2>
+            <p class="kanban-hint">Kliknij „Szczegóły" przy zadaniu, aby je edytować lub zmienić status.</p>
+            <div class="kanban-board">
+              <div class="kanban-column">
+                <h3 class="kanban-column__title kanban-column__title--todo">Do zrobienia</h3>
+                <ul id="kanban-todo" class="kanban-list"></ul>
+              </div>
+              <div class="kanban-column">
+                <h3 class="kanban-column__title kanban-column__title--doing">W trakcie</h3>
+                <ul id="kanban-doing" class="kanban-list"></ul>
+              </div>
+              <div class="kanban-column">
+                <h3 class="kanban-column__title kanban-column__title--done">Gotowe</h3>
+                <ul id="kanban-done" class="kanban-list"></ul>
+              </div>
+            </div>
+          </div>
+        </div><!-- /#tab-kanban -->
+
+      </section><!-- /#active-project-section -->
+
+    </div><!-- /.container -->
+
+    <!-- ─── TASK DETAIL MODAL ────────────────────────────────────────────── -->
+    <div id="task-modal-overlay" class="modal-overlay" style="display: none" role="dialog" aria-modal="true">
+      <div class="modal">
+
+        <div class="modal__header">
+          <h2 id="modal-task-name">Szczegóły zadania</h2>
+          <button id="modal-close-btn" class="modal__close" type="button" aria-label="Zamknij">×</button>
+        </div>
+
+        <div class="modal__body">
+
+          <!-- Edit fields -->
+          <div class="modal-section">
+            <h3 class="modal-section__title">Edytuj zadanie</h3>
+            <div class="form-group">
+              <label for="modal-edit-name">Nazwa</label>
+              <input type="text" id="modal-edit-name" />
+            </div>
+            <div class="form-group">
+              <label for="modal-edit-desc">Opis</label>
+              <textarea id="modal-edit-desc"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="modal-edit-priority">Priorytet</label>
+                <select id="modal-edit-priority">
+                  <option value="low">Niski</option>
+                  <option value="medium">Średni</option>
+                  <option value="high">Wysoki</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="modal-edit-estimated">Szacowane godziny</label>
+                <input type="number" id="modal-edit-estimated" min="0" step="0.5" />
+              </div>
+            </div>
+            <button id="modal-save-btn" type="button" class="btn btn-primary">Zapisz zmiany</button>
+          </div>
+
+          <!-- Read-only details -->
+          <div class="modal-section">
+            <h3 class="modal-section__title">Informacje</h3>
+            <dl id="modal-task-details" class="task-details"></dl>
+          </div>
+
+          <!-- Assign user section (visible if status ≠ done) -->
+          <div id="modal-assign-section" class="modal-section" style="display: none">
+            <h3 class="modal-section__title">Przypisz osobę</h3>
+            <div class="form-group">
+              <label for="modal-user-select">Użytkownik (developer / devops)</label>
+              <select id="modal-user-select">
+                <option value="">-- Wybierz osobę --</option>
+              </select>
+            </div>
+            <button id="modal-assign-btn" type="button" class="btn btn-primary">Przypisz i rozpocznij</button>
+          </div>
+
+          <!-- Mark as done section (visible if status = doing) -->
+          <div id="modal-done-section" class="modal-section" style="display: none">
+            <h3 class="modal-section__title">Zakończ zadanie</h3>
+            <div class="form-group">
+              <label for="modal-realized-hours">Zrealizowane godziny</label>
+              <input type="number" id="modal-realized-hours" min="0" step="0.5" value="0" />
+            </div>
+            <button id="modal-done-btn" type="button" class="btn btn-success">Oznacz jako gotowe</button>
+          </div>
+
+        </div><!-- /.modal__body -->
+      </div><!-- /.modal -->
+    </div><!-- /#task-modal-overlay -->
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
