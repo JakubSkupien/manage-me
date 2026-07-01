@@ -45,9 +45,15 @@
   min-height: 220px;
 }
 
-.kanban-todo-title  { color: var(--bs-secondary-color); }
-.kanban-doing-title { color: var(--bs-primary); }
-.kanban-done-title  { color: var(--bs-success); }
+.kanban-todo-title {
+  color: var(--bs-secondary-color);
+}
+.kanban-doing-title {
+  color: var(--bs-primary);
+}
+.kanban-done-title {
+  color: var(--bs-success);
+}
 
 .kanban-card {
   background-color: var(--bs-body-bg) !important;
@@ -56,7 +62,7 @@
 }
 
 .kanban-card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .12) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
 }
 
 /* ─── Task detail modal (dl.row spacing) ─────────────────────────────────────── */
